@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Odin's Library</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="header-top">
+        <div class="header-copy">
+          <h1 class="title">Odin's Library</h1>
+          <p class="expo">Track your sagas, stories, and knowledge.</p>
+        </div>
+        <button class="add-book-button">Add New Book</button>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span>Total Books</span>
+          <strong id="totalBooks">0</strong>
+        </div>
+        <div class="stat-card">
+          <span>Read</span>
+          <strong id="readBooks">0</strong>
+        </div>
+        <div class="stat-card">
+          <span>Unread</span>
+          <strong id="unreadBooks">0</strong>
+        </div>
+        <div class="stat-card">
+          <span>Reading Now</span>
+          <strong id="readingBooks">0</strong>
+        </div>
+      </div>
+    </header>
+
+    <div class="form-modal hidden" id="bookFormModal">
+      <div class="form-content">
+        <button class="close-form" type="button" aria-label="Close form">
+          ×
+        </button>
+        <h2>Add New Book</h2>
+        <form id="bookForm">
+          <label for="titleInput">Title</label>
+          <input
+            id="titleInput"
+            type="text"
+            placeholder="Enter book title"
+            required
+          />
+
+          <label for="authorInput">Author</label>
+          <input
+            id="authorInput"
+            type="text"
+            placeholder="Enter author name"
+            required
+          />
+
+          <label for="pagesInput">Pages</label>
+          <input
+            id="pagesInput"
+            type="number"
+            min="1"
+            placeholder="Number of pages"
+            required
+          />
+
+          <label for="statusInput">Status</label>
+          <select id="statusInput" required>
+            <option value="read">Read</option>
+            <option value="unread">Unread</option>
+            <option value="reading">Reading Now</option>
+          </select>
+
+          <div class="form-actions">
+            <button type="submit">Save Book</button>
+            <button type="button" class="cancel-button">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <main>
+      <div class="app-shell">
+        <section class="search-card">
+          <form class="search-form" id="searchForm">
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="Search by title or author..."
+            />
+            <button type="button" id="searchButton">Search</button>
+            <div class="filter-group">
+              <span>Filter:</span>
+              <button
+                type="button"
+                class="filter-button active"
+                data-filter="all"
+                id="filterAll"
+              >
+                All
+              </button>
+              <button
+                type="button"
+                class="filter-button"
+                data-filter="read"
+                id="filterRead"
+              >
+                Read
+              </button>
+              <button
+                type="button"
+                class="filter-button"
+                data-filter="unread"
+                id="filterUnread"
+              >
+                Unread
+              </button>
+              <button
+                type="button"
+                class="filter-button"
+                data-filter="reading"
+                id="filterReading"
+              >
+                Reading Now
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <section class="books-section">
+          <div class="empty-state" id="emptyState">
+            <p class="empty-title">No books in your archive yet.</p>
+            <p class="empty-copy">
+              Add your first book to begin your reading saga.
+            </p>
+            <button class="add-book-button secondary" type="button">
+              Add New Book
+            </button>
+          </div>
+          <div id="bookGrid" class="book-grid"></div>
+        </section>
+      </div>
+    </main>
+    <script src="script.js"></script>
+  </body>
+</html>
