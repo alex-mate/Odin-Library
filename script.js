@@ -35,14 +35,20 @@ const filterButtons = document.querySelectorAll(".filter-button");
 
 let myLibrary = [];
 
-function Book(title, author, pages, status) {
-  this.id = crypto.randomUUID();
-  this.title = title;
-  this.author = author;
-  this.pages = pages;
-  this.status = status;
-}
 
+
+class Book {
+  constructor(title, author, pages, status) {
+    this.id = crypto.randomUUID();
+    this.title = title;
+    this.author = author;
+    this.pages = pages;
+    this.status = status;
+  }
+  changeStatus(newStatus) {
+    this.status = newStatus;
+  } 
+}
 function addBookToLibrary(title, author, pages, status) {
   const newBook = new Book(title, author, pages, status);
   myLibrary.push(newBook);
@@ -52,6 +58,7 @@ function addBookToLibrary(title, author, pages, status) {
   updateStatistics();
   [totalBooks, readBooks, unreadBooks, readingBooks].forEach(animateStat);
 }
+
 
 function emptyStateCheck() {
   if (myLibrary.length === 0) {
@@ -96,16 +103,17 @@ function displayLibrary(books) {
     changeStatusButton.addEventListener("click", () => {
       const newStatus = prompt(
         "Enter new status (Read, Unread, Reading):",
-        book.status,
+        book.status
       );
       if (
         newStatus === "Read" ||
         newStatus === "Unread" ||
         newStatus === "Reading"
       ) {
-        book.status = newStatus;
+        book.changeStatus(newStatus);
         saveLibrary();
         displayLibrary(myLibrary);
+        updateStatistics();
       } else {
         alert("Invalid status. Please enter Read, Unread, or Reading.");
       }
@@ -133,10 +141,11 @@ function deleteBook(bookId) {
 function filterBooks(status) {
   if (status === "All") {
     displayLibrary(myLibrary);
-  } else {
+    return;
+  } 
     const filteredBooks = myLibrary.filter((book) => book.status === status);
     displayLibrary(filteredBooks);
-  }
+  
 }
 
 function updateStatistics() {
@@ -178,9 +187,14 @@ function loadLibrary() {
   const savedLibrary = localStorage.getItem("odinLibrary");
 
   if (savedLibrary) {
-    myLibrary = JSON.parse(savedLibrary);
-  }
+   const parsedLibrary = JSON.parse(savedLibrary);
+   myLibrary = parsedLibrary.map((book) => {
+     const restoredBook = new Book(book.title, book.author, book.pages, book.status);
+     restoredBook.id = book.id; // Preserve the original ID
+     return restoredBook;
 
+   });
+  }
   emptyStateCheck();
   displayLibrary(myLibrary);
   updateStatistics();
