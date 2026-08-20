@@ -357,6 +357,27 @@ header {
   color: var(--text);
 }
 
+.form-error {
+  display: none;
+  margin-top: 0.35rem;
+  color: var(--danger);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.form-error.active {
+  display: block;
+}
+
+.form-content input[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+
+.form-content input[aria-invalid="true"]:focus {
+  outline: 2px solid rgba(212, 91, 91, 0.3);
+  outline-offset: 2px;
+}
+
 .form-actions {
   display: flex;
   justify-content: flex-end;

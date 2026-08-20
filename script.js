@@ -7,6 +7,11 @@ const authorInput = document.getElementById("authorInput");
 const pagesInput = document.getElementById("pagesInput");
 const statusInput = document.getElementById("statusInput");
 
+// Form errors
+const titleError = document.getElementById("titleError");
+const authorError = document.getElementById("authorError");
+const pagesError = document.getElementById("pagesError");
+
 // Statistics
 const totalBooks = document.getElementById("totalBooks");
 const readBooks = document.getElementById("readBooks");
@@ -35,8 +40,6 @@ const filterButtons = document.querySelectorAll(".filter-button");
 
 let myLibrary = [];
 
-
-
 class Book {
   constructor(title, author, pages, status) {
     this.id = crypto.randomUUID();
@@ -45,26 +48,33 @@ class Book {
     this.pages = pages;
     this.status = status;
   }
+
   changeStatus(newStatus) {
     this.status = newStatus;
-  } 
+  }
 }
+
 function addBookToLibrary(title, author, pages, status) {
   const newBook = new Book(title, author, pages, status);
+
   myLibrary.push(newBook);
+
   saveLibrary();
   emptyStateCheck();
   displayLibrary(myLibrary);
   updateStatistics();
-  [totalBooks, readBooks, unreadBooks, readingBooks].forEach(animateStat);
-}
 
+  [totalBooks, readBooks, unreadBooks, readingBooks].forEach(
+    animateStat,
+  );
+}
 
 function emptyStateCheck() {
   if (myLibrary.length === 0) {
     emptyState.style.display = "block";
     bookGrid.style.display = "none";
   }
+
   if (myLibrary.length > 0) {
     emptyState.style.display = "none";
     bookGrid.style.display = "grid";
@@ -73,8 +83,10 @@ function emptyStateCheck() {
 
 function displayLibrary(books) {
   bookGrid.innerHTML = "";
+
   books.forEach((book) => {
     const bookCard = document.createElement("div");
+
     bookCard.classList.add("book-card");
     bookCard.setAttribute("data-id", book.id);
 
@@ -91,31 +103,39 @@ function displayLibrary(books) {
     statusElement.textContent = `Status: ${book.status}`;
 
     const deleteButton = document.createElement("button");
+
     deleteButton.textContent = "Delete";
     deleteButton.classList.add("delete-button");
+
     deleteButton.addEventListener("click", () => {
       deleteBook(book.id);
     });
 
     const changeStatusButton = document.createElement("button");
+
     changeStatusButton.textContent = "Change Status";
     changeStatusButton.classList.add("change-status-button");
+
     changeStatusButton.addEventListener("click", () => {
       const newStatus = prompt(
         "Enter new status (Read, Unread, Reading):",
-        book.status
+        book.status,
       );
+
       if (
         newStatus === "Read" ||
         newStatus === "Unread" ||
         newStatus === "Reading"
       ) {
         book.changeStatus(newStatus);
+
         saveLibrary();
         displayLibrary(myLibrary);
         updateStatistics();
       } else {
-        alert("Invalid status. Please enter Read, Unread, or Reading.");
+        alert(
+          "Invalid status. Please enter Read, Unread, or Reading.",
+        );
       }
     });
 
@@ -131,7 +151,10 @@ function displayLibrary(books) {
 }
 
 function deleteBook(bookId) {
-  myLibrary = myLibrary.filter((book) => book.id !== bookId);
+  myLibrary = myLibrary.filter(
+    (book) => book.id !== bookId,
+  );
+
   saveLibrary();
   emptyStateCheck();
   displayLibrary(myLibrary);
@@ -142,17 +165,29 @@ function filterBooks(status) {
   if (status === "All") {
     displayLibrary(myLibrary);
     return;
-  } 
-    const filteredBooks = myLibrary.filter((book) => book.status === status);
-    displayLibrary(filteredBooks);
-  
+  }
+
+  const filteredBooks = myLibrary.filter(
+    (book) => book.status === status,
+  );
+
+  displayLibrary(filteredBooks);
 }
 
 function updateStatistics() {
   const total = myLibrary.length;
-  const read = myLibrary.filter((book) => book.status === "Read").length;
-  const unread = myLibrary.filter((book) => book.status === "Unread").length;
-  const reading = myLibrary.filter((book) => book.status === "Reading").length;
+
+  const read = myLibrary.filter(
+    (book) => book.status === "Read",
+  ).length;
+
+  const unread = myLibrary.filter(
+    (book) => book.status === "Unread",
+  ).length;
+
+  const reading = myLibrary.filter(
+    (book) => book.status === "Reading",
+  ).length;
 
   totalBooks.textContent = total;
   readBooks.textContent = read;
@@ -162,16 +197,19 @@ function updateStatistics() {
 
 function searchBooks(query) {
   const lowerCaseQuery = query.toLowerCase();
+
   const filteredBooks = myLibrary.filter(
     (book) =>
       book.title.toLowerCase().includes(lowerCaseQuery) ||
       book.author.toLowerCase().includes(lowerCaseQuery),
   );
+
   displayLibrary(filteredBooks);
 }
 
 function animateStat(element) {
   element.classList.add("pulse");
+
   element.addEventListener(
     "animationend",
     () => element.classList.remove("pulse"),
@@ -180,21 +218,32 @@ function animateStat(element) {
 }
 
 function saveLibrary() {
-  localStorage.setItem("odinLibrary", JSON.stringify(myLibrary));
+  localStorage.setItem(
+    "odinLibrary",
+    JSON.stringify(myLibrary),
+  );
 }
 
 function loadLibrary() {
   const savedLibrary = localStorage.getItem("odinLibrary");
 
   if (savedLibrary) {
-   const parsedLibrary = JSON.parse(savedLibrary);
-   myLibrary = parsedLibrary.map((book) => {
-     const restoredBook = new Book(book.title, book.author, book.pages, book.status);
-     restoredBook.id = book.id; // Preserve the original ID
-     return restoredBook;
+    const parsedLibrary = JSON.parse(savedLibrary);
 
-   });
+    myLibrary = parsedLibrary.map((book) => {
+      const restoredBook = new Book(
+        book.title,
+        book.author,
+        book.pages,
+        book.status,
+      );
+
+      restoredBook.id = book.id;
+
+      return restoredBook;
+    });
   }
+
   emptyStateCheck();
   displayLibrary(myLibrary);
   updateStatistics();
@@ -207,8 +256,92 @@ function openModal() {
 
 function closeModal() {
   modal.classList.add("hidden");
+
   bookForm.reset();
+
+  clearError(titleInput, titleError);
+  clearError(authorInput, authorError);
+  clearError(pagesInput, pagesError);
 }
+
+/* ---------------------------
+   Form validation
+---------------------------- */
+
+function showTitleError() {
+  if (titleInput.validity.valueMissing) {
+    titleError.textContent =
+      "The book title must be filled!";
+  }
+
+  titleInput.setAttribute("aria-invalid", "true");
+  titleError.classList.add("active");
+}
+
+function showAuthorError() {
+  if (authorInput.validity.valueMissing) {
+    authorError.textContent =
+      "The author name must be filled!";
+  }
+
+  authorInput.setAttribute("aria-invalid", "true");
+  authorError.classList.add("active");
+}
+
+function showPagesError() {
+  if (pagesInput.validity.valueMissing) {
+    pagesError.textContent =
+      "The number of pages must be filled!";
+  } else if (pagesInput.validity.rangeUnderflow) {
+    pagesError.textContent =
+      "The book must have at least 1 page!";
+  } else if (pagesInput.validity.badInput) {
+    pagesError.textContent =
+      "Please enter a valid number of pages!";
+  }
+
+  pagesInput.setAttribute("aria-invalid", "true");
+  pagesError.classList.add("active");
+}
+
+function clearError(input, error) {
+  input.removeAttribute("aria-invalid");
+
+  error.textContent = "";
+  error.classList.remove("active");
+}
+
+/* ---------------------------
+   Validation events
+---------------------------- */
+
+titleInput.addEventListener("input", () => {
+  if (titleInput.validity.valid) {
+    clearError(titleInput, titleError);
+  } else {
+    showTitleError();
+  }
+});
+
+authorInput.addEventListener("input", () => {
+  if (authorInput.validity.valid) {
+    clearError(authorInput, authorError);
+  } else {
+    showAuthorError();
+  }
+});
+
+pagesInput.addEventListener("input", () => {
+  if (pagesInput.validity.valid) {
+    clearError(pagesInput, pagesError);
+  } else {
+    showPagesError();
+  }
+});
+
+/* ---------------------------
+   Modal events
+---------------------------- */
 
 addBookButtons.forEach((button) => {
   button.addEventListener("click", openModal);
@@ -223,25 +356,71 @@ modal.addEventListener("click", (event) => {
   }
 });
 
+/* ---------------------------
+   Form submission
+---------------------------- */
+
 bookForm.addEventListener("submit", (event) => {
   event.preventDefault();
+
+  if (!titleInput.validity.valid) {
+    showTitleError();
+  }
+
+  if (!authorInput.validity.valid) {
+    showAuthorError();
+  }
+
+  if (!pagesInput.validity.valid) {
+    showPagesError();
+  }
+
+  if (!bookForm.checkValidity()) {
+    return;
+  }
+
   const title = titleInput.value.trim();
   const author = authorInput.value.trim();
   const pages = Number.parseInt(pagesInput.value, 10);
   const status = statusInput.value;
 
-  if (!title || !author || !Number.isInteger(pages) || pages <= 0) {
-    return;
-  }
+  addBookToLibrary(
+    title,
+    author,
+    pages,
+    status,
+  );
 
-  addBookToLibrary(title, author, pages, status);
   closeModal();
 });
-filterAllButton.addEventListener("click", () => filterBooks("All"));
-filterReadButton.addEventListener("click", () => filterBooks("Read"));
-filterUnreadButton.addEventListener("click", () => filterBooks("Unread"));
-filterReadingButton.addEventListener("click", () => filterBooks("Reading"));
 
-searchButton.addEventListener("click", () => searchBooks(searchInput.value));
+/* ---------------------------
+   Filters and search
+---------------------------- */
+
+filterAllButton.addEventListener(
+  "click",
+  () => filterBooks("All"),
+);
+
+filterReadButton.addEventListener(
+  "click",
+  () => filterBooks("Read"),
+);
+
+filterUnreadButton.addEventListener(
+  "click",
+  () => filterBooks("Unread"),
+);
+
+filterReadingButton.addEventListener(
+  "click",
+  () => filterBooks("Reading"),
+);
+
+searchButton.addEventListener(
+  "click",
+  () => searchBooks(searchInput.value),
+);
 
 loadLibrary();
